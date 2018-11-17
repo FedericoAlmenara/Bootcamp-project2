@@ -1,7 +1,14 @@
 module.exports = function(sequelize, DataTypes) {
-  var Example = sequelize.define("Example", {
-    text: DataTypes.STRING,
-    description: DataTypes.TEXT
+  var User = sequelize.define("User", {
+    username: DataTypes.STRING,
+    password: DataTypes.TEXT
   });
-  return Example;
+  User.associate = function(models) {
+    // Associating Author with Posts
+    // When an Author is deleted, also delete any associated Posts
+    User.hasMany(models.Post, {
+      onDelete: "cascade"
+    });
+  };
+  return User;
 };

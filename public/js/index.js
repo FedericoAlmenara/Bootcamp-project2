@@ -1,4 +1,5 @@
 // Get references to page elements
+
 var $exampleText = $("#example-text");
 var $exampleDescription = $("#example-description");
 var $submitBtn = $("#submit");
@@ -16,6 +17,16 @@ var API = {
       data: JSON.stringify(example)
     });
   },
+  saveUser: function(example) {
+    return $.ajax({
+      headers: {
+        "Content-Type": "application/json"
+      },
+      type: "POST",
+      url: "api/users",
+      data: JSON.stringify(example)
+    });
+  },
   getExamples: function() {
     return $.ajax({
       url: "api/examples",
@@ -27,7 +38,22 @@ var API = {
       url: "api/examples/" + id,
       type: "DELETE"
     });
+  },
+  getUsers: function () {
+   return $.ajax({
+     url: "api/users/",
+     type: "GET"
+   }) 
   }
+};
+
+var refreshUsers = function () {
+  API.getUsers().then(function(data){
+    var $users = data.map(function (user) {
+      
+    })
+  })
+    
 };
 
 // refreshExamples gets new examples from the db and repopulates the list
@@ -58,6 +84,24 @@ var refreshExamples = function() {
     $exampleList.append($examples);
   });
 };
+
+var handleUserSubmit = function(event){
+  event.preventDefault();
+  var user = {
+    username: $username.val().trim(),
+    password: $userPassword.val().trim()
+  };
+  if (!(user.username && user.password)) {
+    alert("You must enter a username and password")
+    return;
+  }
+  API.saveUser(user).then(function(){
+    refreshUsers();
+  })
+  $username.val("");
+  $userPassword.val("");
+}
+
 
 // handleFormSubmit is called whenever we submit a new example
 // Save the new example to the db and refresh the list
@@ -97,3 +141,5 @@ var handleDeleteBtnClick = function() {
 // Add event listeners to the submit and delete buttons
 $submitBtn.on("click", handleFormSubmit);
 $exampleList.on("click", ".delete", handleDeleteBtnClick);
+
+$userSubmit.on("click", handleUserSubmit);
